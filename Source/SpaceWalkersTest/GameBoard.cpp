@@ -5,25 +5,94 @@
 
 #include "ModuleA.h"
 
-AGameBoard::AGameBoard()
+void UGameBoard::Init()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	ModifyResource(200.f);
+
+	//Default construct all of the subarrays and zero the memory of the subarrays so we can check for nullptr
+	Board.SetNum(5);
+	for(int32 i = 0, j = 0; i < Board.Num(); ++i)
+		Board[i]->SetNumZeroed(5);
 }
 
-void AGameBoard::BeginPlay()
+void UGameBoard::AddModule(TSubclassOf<UModuleBase> ModuleClass, int32 X, int32 Y)
 {
-	Super::BeginPlay();
-
-	//Initialize the whole array so we can easily check for nullptr later
-	Board.AddDefaulted(5);
-	for(auto& by : Board)
-		by.AddZeroed(5);
-}
-
-void AGameBoard::AddModule(AModuleBase* Module, int32 X, int32 Y)
-{
-	if(!Board[X][Y])
+	UModuleBase* ModuleDefaults = Cast<UModuleBase>(ModuleClass.Get()->GetDefaultObject());
+	if(ModuleDefaults && Resource >= ModuleDefaults->Cost)
 	{
-		Board[X][Y] = Module;
+		if(!Board[X][Y])
+		{
+			ModifyResource(-ModuleDefaults->Cost);
+			Board[X][Y] = NewObject<UModuleBase>(this, ModuleClass.Get());
+			Board[X][Y]->GameBoard = this;
+			Board[X][Y]->X = X;
+			Board[X][Y]->Y = Y;
+			Board[X][Y]->Init();
+			OnModuleAdded.Broadcast(Board[X][Y], X, Y);
+		}
+		else
+			OnBoardPopUp.Broadcast(BOARD_TEXT("Place already occupied!"));
 	}
+	else
+		OnBoardPopUp.Broadcast(BOARD_TEXT("Not enough resource!"));
+}
+
+void UGameBoard::LevelUpModule(int32 X, int32 Y)
+{
+	if(Board[X][Y]->LevelUpCost <= Resource)
+	{
+		if(Board[X][Y]->Level < Board[X][Y]->MaxLevel)
+		{
+			ModifyResource(-Board[X][Y]->LevelUpCost);
+			Board[X][Y]->LevelUp();
+			OnLevelUp.Broadcast(X, Y);
+		}
+	}
+	else
+		OnBoardPopUp.Broadcast(BOARD_TEXT("Not enough resource!"));
+}
+
+void UGameBoard::TierUp()
+{
+	if(Tiers.IsValidIndex(CurrentTier - 1))
+	{
+		if(Resource >= Tiers[CurrentTier - 1])
+		{
+			ModifyResource(-Resource);
+
+			for(int32 i = 0; i < Board.Num(); ++i)
+			{
+				for(int32 j = 0; j < Board[i]->Num(); ++j)
+				{
+					if(Board[i][j])
+						Board[i][j]->Destroy();
+				}
+			}
+			Board.Empty(5);
+			Board.SetNum(5);
+			for(int32 i = 0, j = 0; i < Board.Num(); ++i)
+				Board[i]->SetNumZeroed(5);
+
+			ModifyResource(StartResource);
+
+			OnTierUp.Broadcast(++CurrentTier);
+		}
+	}
+}
+
+void UGameBoard::FixModule(int32 X, int32 Y)
+{
+	if(Resource >= Board[X][Y]->FixCost)
+	{
+		ModifyResource(-Board[X][Y]->FixCost);
+		Board[X][Y]->Fix();
+	}
+	else
+		OnBoardPopUp.Broadcast(BOARD_TEXT("Not enough resource!"));
+}
+
+void UGameBoard::ModifyResource(float Amount)
+{
+	Resource = FMath::Clamp((double)Resource + (double)Amount, 0.0, (double)TNumericLimits<float>::Max());
+	OnResourceChanged.Broadcast(Resource);
 }

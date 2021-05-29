@@ -9,18 +9,23 @@
 /**
  * 
  */
-UCLASS()
-class SPACEWALKERSTEST_API AModuleA : public AModuleBase
+UCLASS(Abstract, Blueprintable)
+class SPACEWALKERSTEST_API UModuleA : public UModuleBase
 {
 	GENERATED_BODY()
 
 public:
-	AModuleA();
+	UModuleA();
 
-protected:
-	virtual void BeginPlay() override;
+	virtual void ModuleTick() override;
+
+	virtual FText GetModuleName() const override { return MODULE_TEXT("Module A"); }
+
+	virtual FText GetModuleInfo() const override { return MODULE_TEXT_FORMAT("Generates: {0}", ResourceGenerated); }
+
+	virtual void OnLevelUp() override;
 
 public:
-	virtual void ModuleTick() override;
-	
+	UPROPERTY(EditDefaultsOnly)
+	float ResourceGenerated = 10.f;
 };

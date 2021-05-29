@@ -3,19 +3,29 @@
 
 #include "ModuleA.h"
 
-AModuleA::AModuleA()
+#include "GameBoard.h"
+
+UModuleA::UModuleA()
 {
+	MaxLevel = 5;
+
 	ConstructorHelpers::FObjectFinder<UStaticMesh> ModuleMeshFinder(TEXT("StaticMesh'/Game/Spacewalkers/Art/SM_ALetter.SM_ALetter'"));
 	if(ModuleMeshFinder.Succeeded())
 		ModuleMesh = ModuleMeshFinder.Object;
 }
 
-void AModuleA::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-void AModuleA::ModuleTick()
+void UModuleA::ModuleTick()
 {
 	Super::ModuleTick();
+
+	GameBoard.Get()->ModifyResource(ResourceGenerated);
+	
+	OnPopUp.Broadcast(MODULE_TEXT_FORMAT("Plus {0}", ResourceGenerated), FLinearColor::Green);
+}
+
+void UModuleA::OnLevelUp()
+{
+	Super::OnLevelUp();
+
+	ResourceGenerated += 10;
 }

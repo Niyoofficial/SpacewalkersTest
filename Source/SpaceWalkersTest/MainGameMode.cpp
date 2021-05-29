@@ -3,3 +3,10 @@
 
 #include "MainGameMode.h"
 
+#include "GameBoard.h"
+
+void AMainGameMode::BeginPlay()
+{
+	GameBoard = NewObject<UGameBoard>(this, GameBoardClass.Get());
+	GameBoard->Init();
+}
