@@ -7,7 +7,7 @@
 
 void UGameBoard::Init()
 {
-	ModifyResource(200.f);
+	ModifyResource(StartResource);
 
 	//Default construct all of the subarrays and zero the memory of the subarrays so we can check for nullptr
 	Board.SetNum(5);
