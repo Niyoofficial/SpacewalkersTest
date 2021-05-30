@@ -58,22 +58,22 @@ public:
 
 public:
 	UFUNCTION(BlueprintPure)
-	UModuleBase* GetModule(int32 X, int32 Y) const { return Board[X].Row[Y]; }
+	FORCEINLINE UModuleBase* GetModule(int32 X, int32 Y) const { return Board[X].Row[Y]; }
 
 	UFUNCTION(BlueprintGetter)
-	int32 GetCurrentTier() const { return CurrentTier; }
+	FORCEINLINE int32 GetCurrentTier() const { return CurrentTier; }
 
 	UFUNCTION(BlueprintGetter)
-	int32 GetBoardSizeX() const { return BoardSizeX; }
+	FORCEINLINE int32 GetBoardSizeX() const { return BoardSizeX; }
 
 	UFUNCTION(BlueprintGetter)
-	int32 GetBoardSizeY() const { return BoardSizeY; }
+	FORCEINLINE int32 GetBoardSizeY() const { return BoardSizeY; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	float GetResource() const { return Resource; }
+	FORCEINLINE float GetResource() const { return Resource; }
 
 	UFUNCTION(BlueprintPure)
-	float GetTierTarget(int32 Tier) const { return Tiers.IsValidIndex(Tier - 1) ? Tiers[Tier - 1] : -1.f; }
+	FORCEINLINE float GetTierTarget(int32 Tier) const { return Tiers.IsValidIndex(Tier - 1) ? Tiers[Tier - 1] : -1.f; }
 
 public:
 	void ModifyResource(float Amount);
@@ -106,9 +106,6 @@ public:
 
 public:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	TArray<float> Tiers = {10000.f, 30000.f, 100000.f};
-
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 	float StartResource = 200.f;
 
 	UPROPERTY(Category = GameBoard, BlueprintAssignable)
@@ -127,6 +124,9 @@ public:
 	FTierUpSignature OnTierUp;
 
 private:
+	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
+	TArray<float> Tiers = {10000.f, 30000.f, 100000.f};
+
 	UPROPERTY(BlueprintGetter=GetBoardSizeX, EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
 	int32 BoardSizeX = 5;
 
