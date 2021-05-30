@@ -8,5 +8,5 @@
 void AMainGameMode::BeginPlay()
 {
 	GameBoard = NewObject<UGameBoard>(this, GameBoardClass.Get());
-	GameBoard->Init();
+	GameBoard->Init(StartResource, Tiers, BoardSizeX, BoardSizeY);
 }

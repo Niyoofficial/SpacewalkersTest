@@ -5,8 +5,13 @@
 
 #include "ModuleA.h"
 
-void UGameBoard::Init()
+void UGameBoard::Init(float StartingRes, TArray<float> TiersArray, int32 XSize, int32 YSize)
 {
+	StartResource = StartingRes;
+	Tiers = TiersArray;
+	BoardSizeX = XSize;
+	BoardSizeY = YSize;
+
 	ModifyResource(StartResource);
 
 	//Default construct all of the subarrays and zero the memory of the subarrays so we can check for nullptr

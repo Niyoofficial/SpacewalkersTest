@@ -24,10 +24,23 @@ public:
 	UFUNCTION(BlueprintGetter)
 	UGameBoard* GetGameBoard() const { return GameBoard; }
 
-private:
-	UPROPERTY(EditDefaultsOnly)
+public:
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
 	TSubclassOf<UGameBoard> GameBoardClass = UGameBoard::StaticClass();
 
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	float StartResource = 500.f;
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	TArray<float> Tiers = {10000.f, 30000.f, 100000.f};
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	int32 BoardSizeX = 5;
+
+	UPROPERTY(EditDefaultsOnly, Category = Settings)
+	int32 BoardSizeY = 5;
+
+private:
 	UPROPERTY(BlueprintGetter=GetGameBoard)
 	UGameBoard* GameBoard;
 };

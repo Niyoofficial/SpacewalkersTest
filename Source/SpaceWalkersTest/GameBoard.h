@@ -40,9 +40,6 @@ class SPACEWALKERSTEST_API UGameBoard : public UObject
 {
 	GENERATED_BODY()
 
-public:	
-	virtual void Init();
-
 public:
 	UFUNCTION(BlueprintCallable)
 	void AddModule(TSubclassOf<UModuleBase> ModuleClass, int32 X, int32 Y);
@@ -78,6 +75,7 @@ public:
 public:
 	void ModifyResource(float Amount);
 
+public:
 	template<typename PREDICATE>
 	TArray<UModuleBase*, TInlineAllocator<8>> GetMatchingModules(UModuleBase* SourceModule, const PREDICATE& Predicate)
 	{
@@ -104,10 +102,10 @@ public:
 		return Adj;
 	}
 
-public:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
-	float StartResource = 200.f;
+public:	
+	virtual void Init(float StartingRes, TArray<float> TiersArray, int32 XSize, int32 YSize);
 
+public:
 	UPROPERTY(Category = GameBoard, BlueprintAssignable)
 	FModuleAddedSignature OnModuleAdded;
 
@@ -124,16 +122,17 @@ public:
 	FTierUpSignature OnTierUp;
 
 private:
-	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly, meta=(AllowPrivateAccess = "true"))
-	TArray<float> Tiers = {10000.f, 30000.f, 100000.f};
+	float StartResource = 500.f;
 
-	UPROPERTY(BlueprintGetter=GetBoardSizeX, EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	TArray<float> Tiers;
+
+	UPROPERTY(BlueprintGetter=GetBoardSizeX)
 	int32 BoardSizeX = 5;
 
-	UPROPERTY(BlueprintGetter=GetBoardSizeY, EditDefaultsOnly, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintGetter=GetBoardSizeY)
 	int32 BoardSizeY = 5;
 
-	UPROPERTY(BlueprintGetter=GetCurrentTier, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(BlueprintGetter=GetCurrentTier)
 	int32 CurrentTier = 1;
 
 private:
